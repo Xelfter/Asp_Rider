@@ -29,10 +29,10 @@ struct FItemStatistics
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	float ArmorRating;
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	float DamageValue;
 
 };
@@ -42,16 +42,16 @@ struct FItemTextData
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	FText Name;
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	FText Description;
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	FText InetractionText;
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	FText UsageText;
 };
 
@@ -60,13 +60,13 @@ struct FItemNumericData
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	float Weight;
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	int32 MaxStackSize;
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	bool bIsStackable;
 };
 
@@ -75,11 +75,11 @@ struct FItemAssetData
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditeAnywhere)
+	UPROPERTY(EditAnywhere)
 	UTexture2D* Icon;
 
-	UPROPERTY(EditeAnywhere)
-	UStatisticMesh* Mesh;
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* Mesh;
 };
 
 USTRUCT()
