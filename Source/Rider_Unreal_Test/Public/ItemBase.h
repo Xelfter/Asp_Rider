@@ -64,7 +64,7 @@ public:
 protected:
 	bool operator ==(const FName& OtherID) const 
 	{
-		return ID == OtherID;
+		return this->ID == OtherID;
 	}
 };
 
