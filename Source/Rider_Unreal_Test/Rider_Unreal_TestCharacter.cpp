@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+
 
 #include "Rider_Unreal_TestCharacter.h"
 #include "Engine/LocalPlayer.h"
@@ -10,6 +10,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "DrawDebugHelpers.h"
+
+
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -44,16 +48,13 @@ ARider_Unreal_TestCharacter::ARider_Unreal_TestCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	InteractionCheckFrequency = 0.3;
+	InteractionCheckDistance = 225.0f;
+
+	BaseEyeHeight = 73.0f;
 }
 
-void ARider_Unreal_TestCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Start the timer
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ARider_Unreal_TestCharacter::CountDown, 1.f, true, 0.f);
-}
 
 void ARider_Unreal_TestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -91,6 +92,161 @@ void ARider_Unreal_TestCharacter::CountDown()
 
 	UE_LOG(LogTemplateCharacter, Log, TEXT("Timer: %02d:%02d"), Minutes, Seconds);
 }
+
+void ARider_Unreal_TestCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Start the timer
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ARider_Unreal_TestCharacter::CountDown, 1.f, true, 0.f);
+}
+
+void ARider_Unreal_TestCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
+	{
+		PerformInteractionCheck();
+	}
+}
+
+void ARider_Unreal_TestCharacter::AddTickPrerequisiteActor(AActor* PrerequisiteActor)
+{
+	Super::AddTickPrerequisiteActor(PrerequisiteActor);
+}
+
+void ARider_Unreal_TestCharacter::PerformInteractionCheck()
+{
+	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
+
+	FVector TraceStart{ GetPawnViewLocation() };
+	FVector TraceEnd{ TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance) };
+	
+	float LookDiection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
+
+	if (LookDiection > 0.0f)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		FHitResult TraceHit;
+
+		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+		{
+			if (TraceHit.GetActor() && TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			{
+				const float Distance = (TraceStart - TraceHit.ImpactPoint).Size();
+
+				if (TraceHit.GetActor() != InteractionData.CurrentInteractable && Distance <= InteractionCheckDistance)
+				{
+					FoundInteractable(TraceHit.GetActor());
+					return;
+				}
+
+				if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+				{
+					return;
+				}
+			}
+		}
+	}
+	NoInteractableFound();
+}
+
+void ARider_Unreal_TestCharacter::FoundInteractable(AActor* NewInteractable)
+{
+	if (IsInteracting())
+	{
+		EndInteract();
+	}
+
+	if (InteractionData.CurrentInteractable)
+	{
+		TargetInteractable = InteractionData.CurrentInteractable;
+		TargetInteractable->EndFocus();
+	}
+
+	InteractionData.CurrentInteractable = NewInteractable;
+	TargetInteractable = NewInteractable;
+
+	TargetInteractable->BeginFocus();
+}
+
+
+void ARider_Unreal_TestCharacter::NoInteractableFound()
+{
+	if (IsInteracting())
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	}
+
+	if (InteractionData.CurrentInteractable)
+	{
+		if (IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->EndFocus();
+		}
+
+		// hide interaction widget on the HUD
+		InteractionData.CurrentInteractable = nullptr;
+		TargetInteractable = nullptr;
+	}
+}
+
+
+void ARider_Unreal_TestCharacter::BeginInteract()
+{
+	// verify nothing has changed with the interactable state since beginning interaction
+	PerformInteractionCheck();
+
+	if (InteractionData.CurrentInteractable)
+	{
+		if (IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->BeginInteract();
+
+			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			{
+				Interact();
+			}
+			else
+			{
+				GetWorldTimerManager().SetTimer(
+					TimerHandle_Interaction,
+					this,
+					&ARider_Unreal_TestCharacter::Interact,
+					TargetInteractable->InteractableData.InteractionDuration,
+					false
+				);
+			}
+		}
+	}
+}
+
+void ARider_Unreal_TestCharacter::EndInteract()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->EndInteract();
+	}
+}
+
+void ARider_Unreal_TestCharacter::Interact()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->Interact();
+	}
+}
+
+
+
 void ARider_Unreal_TestCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
