@@ -10,7 +10,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "InputAction.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -19,7 +18,6 @@
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 ARider_Unreal_TestCharacter::ARider_Unreal_TestCharacter()
-: Minutes(2), Seconds(0)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -55,19 +53,13 @@ ARider_Unreal_TestCharacter::ARider_Unreal_TestCharacter()
 	InteractionCheckDistance = 225.0f;
 
 	BaseEyeHeight = 73.0f;
-	
 }
 
 
 void ARider_Unreal_TestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) 
 	{
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ARider_Unreal_TestCharacter::BeginInteract);
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ARider_Unreal_TestCharacter::EndInteract);
-		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARider_Unreal_TestCharacter::Move);
@@ -104,22 +96,10 @@ void ARider_Unreal_TestCharacter::CountDown()
 void ARider_Unreal_TestCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	Minutes = 2;
-	Seconds = 0;
 
-	
 	// Start the timer
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ARider_Unreal_TestCharacter::CountDown, 1.f, true, 0.f);
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 void ARider_Unreal_TestCharacter::Tick(float DeltaSeconds)
@@ -144,9 +124,9 @@ void ARider_Unreal_TestCharacter::PerformInteractionCheck()
 	FVector TraceStart{ GetPawnViewLocation() };
 	FVector TraceEnd{ TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance) };
 	
-	float LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
+	float LookDiection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
 
-	if (LookDirection > 0.0f)
+	if (LookDiection > 0.0f)
 	{
 		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 		FCollisionQueryParams QueryParams;
