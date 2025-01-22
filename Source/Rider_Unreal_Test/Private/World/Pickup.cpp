@@ -2,6 +2,7 @@
 
 
 #include "World/Pickup.h"
+#include "Rider_Unreal_Test/Components/InventoryComponent.h"
 #include  "ItemBase.h"
 
 
@@ -78,13 +79,16 @@ void APickup::EndFocus()
 {
 	if (PickupMesh)
 	{
-		PickupMesh->SetRenderCustomDepth(true);
+		PickupMesh->SetRenderCustomDepth(false);
 	}
 }
 
-void APickup::Interact()
+void APickup::Interact(ARider_Unreal_TestCharacter* PlayerCharacter)
 {
-	
+	if (PlayerCharacter)
+	{
+		TakePickup(PlayerCharacter);
+	}
 
 }
 
@@ -94,7 +98,54 @@ void APickup::TakePickup(const ARider_Unreal_TestCharacter* Taker)
 	{
 		if (ItemReference)
 		{
-			// if (UInventoryComponent* PlayerInventory = Taker->GetInventory())
+			if (UInventoryComponent* PlayerInventory = Taker->GetInventory())
+			{
+				const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
+
+				switch (AddResult.OperationResult)
+				{
+				case EItemAddResult::IAR_NoItemAdded:
+					break;
+
+				case EItemAddResult::IAR_PartialAmountItemAdded:
+					UpdateInteractableData();
+					Taker->UpdateInteractionWidget();
+					break;
+
+				case EItemAddResult::IAR_AllItemAdded:
+					Destroy();
+					break;
+				}
+
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *AddResult.ResultMessage.ToString());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player inventory component is null!"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Pickup internal item reference was somehow null!"));
+		}
+	}
+
+}
+
+void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FName ChangedPropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	if (ChangedPropertyName == GET_MEMBER_NAME_CHECKED(APickup, DesiredItemID))
+	{
+		if (ItemDataTable)
+		{
+			if (const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString()))
+			{
+				PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+			}
 		}
 	}
 }

@@ -25,11 +25,6 @@ public:
 	
 	virtual void EndFocus() override;
 	
-	virtual void Interact() override;
-	
-	
-	void TakePickup(const ARider_Unreal_TestCharacter* Taker);
-
 	
 
 	void InitializePickup(const TSubclassOf<UItemBase> BaseClass, const int32 InQuantity);
@@ -47,13 +42,13 @@ protected:
 	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Database")
 	UDataTable* ItemDataTable;
 
-	UPROPERTY(EditInstanceOnly, Category = "Pickup |Item Database")
+	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Database")
 	FName DesiredItemID;
 
-	UPROPERTY(VisibleAnywhere, Category = "Pickup |Item Reference")
+	UPROPERTY(VisibleAnywhere, Category = "Pickup | Item Reference")
 	UItemBase* ItemReference;
 
-	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Reference")
+	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Database")
 	int32 ItemQuantity;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Pickup | Interaction")
@@ -63,9 +58,15 @@ protected:
 	
 	virtual void BeginPlay() override;
 	
-	//virtual void Tick(float DeltaTime) override;
 
+	virtual void Interact(ARider_Unreal_TestCharacter* PlayerCharacter) override;
+	
 	void UpdateInteractableData();
+
 	
-	
+	void TakePickup(const ARider_Unreal_TestCharacter* Taker);
+
+#if WITH_EDITOR	
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif	
 };

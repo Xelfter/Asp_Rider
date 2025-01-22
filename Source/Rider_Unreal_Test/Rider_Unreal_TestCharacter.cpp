@@ -13,6 +13,7 @@
 #include "InputActionValue.h"
 #include "InputAction.h"
 #include "DrawDebugHelpers.h"
+#include "Components/InventoryComponent.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -44,6 +45,11 @@ ARider_Unreal_TestCharacter::ARider_Unreal_TestCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+
+	PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PlayerInventory"));
+	PlayerInventory->SetSlotsCapacity(20);
+	PlayerInventory->SetWeightCapacity(50.0f);
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -138,6 +144,7 @@ void ARider_Unreal_TestCharacter::AddTickPrerequisiteActor(AActor* PrerequisiteA
 {
 	Super::AddTickPrerequisiteActor(PrerequisiteActor);
 }
+
 
 void ARider_Unreal_TestCharacter::PerformInteractionCheck()
 {
@@ -268,10 +275,17 @@ void ARider_Unreal_TestCharacter::Interact()
 
 	if (IsValid(TargetInteractable.GetObject()))
 	{
-		TargetInteractable->Interact();
+		TargetInteractable->Interact(this);
 	}
 }
 
+void ARider_Unreal_TestCharacter::UpdateInteractionWidget() const
+{
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	}
+}
 
 
 void ARider_Unreal_TestCharacter::Move(const FInputActionValue& Value)

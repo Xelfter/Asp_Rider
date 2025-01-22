@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+//#include "Rider_Unreal_Test/Rider_Unreal_TestCharacter.h"
 #include "InteractionInterface.generated.h"
 
 
+class ARider_Unreal_TestCharacter;
 
 UENUM()
 enum class EInteractableType : uint8
@@ -71,7 +73,7 @@ public:
 	virtual void EndFocus();
 	virtual void BeginInteract();
 	virtual void EndInteract();
-	virtual void Interact();
+	virtual void Interact(ARider_Unreal_TestCharacter* PlayerCharacter);
 
 	FInteractableData InteractableData;
 };
