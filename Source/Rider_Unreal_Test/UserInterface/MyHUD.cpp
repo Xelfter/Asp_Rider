@@ -48,7 +48,7 @@ void AMyHUD::HideMenu()
 	}
 }
 
-void AMyHUD::ShowInteractionWidget()
+void AMyHUD::ShowInteractionWidget() const
 {
 	if (InteractionWidget)
 	{
@@ -56,15 +56,15 @@ void AMyHUD::ShowInteractionWidget()
 	}
 }
 
-void AMyHUD::HideInteractionWidget()
+void AMyHUD::HideInteractionWidget() const
 {
 	if (InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
-void AMyHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
+void AMyHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
 {
 	if (InteractionWidget)
 	{
@@ -73,7 +73,7 @@ void AMyHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
 			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 
-		// InteractionWidget->UpdateWidget(InteractableData);
+		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }
 

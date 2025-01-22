@@ -23,7 +23,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Interaction Widget | Player Reference")
 	ARider_Unreal_TestCharacter* PlayerReference;
 
-	void UpdateWidget(const FInteractableData* InteractableData);
+	void UpdateWidget(const FInteractableData* InteractableData) const;
 
 protected:
 	

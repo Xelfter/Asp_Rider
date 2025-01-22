@@ -15,6 +15,8 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+class AMyHUD;
+
 USTRUCT()
 struct FInteractionData
 {
@@ -90,6 +92,10 @@ public:
 
 
 protected:
+
+	UPROPERTY()
+	AMyHUD* HUD;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
 

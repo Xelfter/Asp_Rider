@@ -7,13 +7,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "UserInterface/MyHUD.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "InputAction.h"
 #include "DrawDebugHelpers.h"
-
-
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -104,6 +103,9 @@ void ARider_Unreal_TestCharacter::CountDown()
 void ARider_Unreal_TestCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HUD = Cast<AMyHUD>( GetWorld()->GetFirstPlayerController()->GetHUD( ));
+
 	
 	Minutes = 2;
 	Seconds = 0;
@@ -191,6 +193,9 @@ void ARider_Unreal_TestCharacter::FoundInteractable(AActor* NewInteractable)
 	InteractionData.CurrentInteractable = NewInteractable;
 	TargetInteractable = NewInteractable;
 
+	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+
+
 	TargetInteractable->BeginFocus();
 }
 
@@ -209,7 +214,9 @@ void ARider_Unreal_TestCharacter::NoInteractableFound()
 			TargetInteractable->EndFocus();
 		}
 
-		// hide interaction widget on the HUD
+
+		HUD->HideInteractionWidget();
+		
 		InteractionData.CurrentInteractable = nullptr;
 		TargetInteractable = nullptr;
 	}
