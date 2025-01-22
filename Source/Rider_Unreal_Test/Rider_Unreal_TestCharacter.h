@@ -73,6 +73,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -135,11 +139,12 @@ protected:
 	virtual void BeginPlay() override;
 
 
-	/** Timer properties */
-	UPROPERTY(BlueprintReadOnly)
-	int Minutes = 2;
+	/** Timer minutes */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
+	int32 Minutes;
 
-	UPROPERTY(BlueprintReadOnly)
-	int Seconds = 0;
+	/** Timer seconds */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
+	int32 Seconds;
 };
 
