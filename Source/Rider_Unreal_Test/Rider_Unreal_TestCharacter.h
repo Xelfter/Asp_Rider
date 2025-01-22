@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "InteractionInterface.h"
+#include "Components/InventoryComponent.h"
 #include "Rider_Unreal_TestCharacter.generated.h"
 
 

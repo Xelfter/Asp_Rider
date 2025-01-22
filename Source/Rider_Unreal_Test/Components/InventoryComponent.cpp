@@ -111,7 +111,7 @@ void UInventoryComponent::SplitExistingStack(UItemBase* ItemIn, const int32 Amou
 	}
 }
 
-FItemAddResult UInventoryComponent::HandleNonStackableItems(UItemBase* InputItem, int32 RequestedAddAmount)
+FItemAddResult UInventoryComponent::HandleNonStackableItems(UItemBase* InputItem)
 {
 	// Check if the input item has valid weight
 	if (FMath::IsNearlyZero(InputItem->GetItemSingleWeight()) || InputItem->GetItemSingleWeight() < 0)
@@ -133,12 +133,12 @@ FItemAddResult UInventoryComponent::HandleNonStackableItems(UItemBase* InputItem
 	if (InventoryContents.Num() + 1 > InventorySlotsCapacity)
 	{
 		return FItemAddResult::AddedNone(FText::Format(
-			FText::FromString("Could not add {0} to the inventory. All inventory slots are full."),
+			FText::FromString("Could not add a single{0} to the inventory. All inventory slots are full."),
 			InputItem->TextData.Name));
 	}
 
-	AddNewItem(InputItem, RequestedAddAmount);
-	return FItemAddResult::AddedAll(RequestedAddAmount, FText::Format(
+	AddNewItem(InputItem, 1);
+	return FItemAddResult::AddedAll(1, FText::Format(
 			FText::FromString("Successfully added {0} {1} to the inventory."),
 			InputItem->TextData.Name));
 }
@@ -157,7 +157,7 @@ FItemAddResult UInventoryComponent::HandleAddItem(UItemBase* InputItem)
 		// Handle non-stackable items
 		if (!InputItem->NumericData.bIsStackable)
 		{
-			return HandleNonStackableItems(InputItem, InitialRequestedAddAmount);
+			return HandleNonStackableItems(InputItem);
 		}
 
 		// Handle stackable items
