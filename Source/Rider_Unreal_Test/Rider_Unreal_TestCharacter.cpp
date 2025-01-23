@@ -73,7 +73,7 @@ void ARider_Unreal_TestCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ARider_Unreal_TestCharacter::BeginInteract);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ARider_Unreal_TestCharacter::EndInteract);
 
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ARider_Unreal_TestCharacter::ToggleMenu);
+		EnhancedInputComponent->BindAction(ToggleMenuAction, ETriggerEvent::Completed, this, &ARider_Unreal_TestCharacter::ToggleMenu);
 		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);

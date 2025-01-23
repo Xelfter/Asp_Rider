@@ -52,19 +52,23 @@ void AMyHUD::ToggleMenu()
 {
 	if (bIsMenuVisible)
 	{
+		// Menü wird geschlossen
 		HideMenu();
 
-		const FInputModeUIOnly InputMode;
+		// Setze den Eingabemodus auf GameOnly
+		const FInputModeGameOnly InputMode;  // Spieler hat wieder vollen Input
 		GetOwningPlayerController()->SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(false);
+		GetOwningPlayerController()->SetShowMouseCursor(false);  // Mauszeiger ausblenden
 	}
 	else
 	{
+		// Menü wird geöffnet
 		DisplayMenu();
-		
+
+		// Setze den Eingabemodus auf UI + Spiel (z.B. für Maussteuerung im Menü)
 		const FInputModeGameAndUI InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(true);
+		GetOwningPlayerController()->SetShowMouseCursor(true);  // Mauszeiger einblenden
 	}
 }
 
