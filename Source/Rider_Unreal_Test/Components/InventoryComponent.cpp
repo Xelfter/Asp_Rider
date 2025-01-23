@@ -2,8 +2,8 @@
 
 
 #include "Rider_Unreal_Test/Components/InventoryComponent.h"
-
 #include "ItemBase.h"
+
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent(): InventoryTotalWeight(0), InventorySlotsCapacity(0),

@@ -59,7 +59,7 @@ public:
 	FORCEINLINE float GetItemSingleWeight() const { return NumericData.Weight; }
 	
 	UFUNCTION(Category = "Item")
-	FORCEINLINE float IsFullItemStack() const { return Quantity * NumericData.MaxStackSize; };
+	FORCEINLINE float IsFullItemStack() const { return Quantity >= NumericData.MaxStackSize; };
 	
 	UFUNCTION(Category = "Item")
 	void SetQuantity(const int32 NewQuantity);
@@ -75,9 +75,3 @@ protected:
 	}
 };
 
-
-//UCLASS()
-//class RIDER_UNREAL_TEST_API UItemBase : public UObject
-//{
-//	GENERATED_BODY()
-//};
