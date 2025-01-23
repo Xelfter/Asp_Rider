@@ -43,7 +43,7 @@ void UInventoryItemSlot::NativeConstruct()
 			ItemBorder->SetBrushColor(FLinearColor::Red);
 			break;
 		case EItemQuality::Legandary:
-			ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.65f, 0.0f, 1.0f)); // Orange
+			ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f, 1.0f)); // Orange
 			break;
 		default:
 			break;
@@ -84,7 +84,7 @@ void UInventoryItemSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 }
 
 void UInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
-	UDragDropOperation*& OutOperation)
+											  UDragDropOperation*& OutOperation)
 {
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 
@@ -93,12 +93,14 @@ void UInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const
 		const TObjectPtr<UDragItemVisual> DragVisual = CreateWidget<UDragItemVisual>(this, DragItemVisualClass);
 		DragVisual->ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
 		DragVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
-		DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+
+		ItemReference->NumericData.bIsStackable
+			? DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity))
+			: DragVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
 
 		UItemDragDropOperation* DragItemOperation = NewObject<UItemDragDropOperation>();
 		DragItemOperation->SourceItem = ItemReference;
 		DragItemOperation->SourceInventory = ItemReference->OwningInventory;
-
 		DragItemOperation->DefaultDragVisual = DragVisual;
 		DragItemOperation->Pivot = EDragPivot::TopLeft;
 
@@ -107,7 +109,8 @@ void UInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const
 }
 
 bool UInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
-	UDragDropOperation* InOperation)
+									  UDragDropOperation* InOperation)
 {
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
+

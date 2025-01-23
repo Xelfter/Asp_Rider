@@ -2,6 +2,8 @@
 
 
 #include "Rider_Unreal_Test/UserInterface/InventoryPanel.h"
+
+#include "ItemDragDropOperation.h"
 #include "Rider_Unreal_Test/Rider_Unreal_TestCharacter.h"
 #include "Rider_Unreal_Test/Components/InventoryComponent.h"
 #include "Rider_Unreal_Test/UserInterface/InventoryItemSlot.h"
@@ -57,8 +59,21 @@ void UInventoryPanel::RefreshInventory()
 
 
 
-bool UInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
-	UDragDropOperation* InOperation)
+bool UInventoryPanel::NativeOnDrop(const FGeometry& InGeometry,
+								   const FDragDropEvent& InDragDropEvent,
+								   UDragDropOperation* InOperation)
 {
-	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	const UItemDragDropOperation* ItemDragDrop = Cast<UItemDragDropOperation>(InOperation);
+
+	if (ItemDragDrop->SourceItem && InventoryReference)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Detected an item drop on InventoryPanel."));
+
+		// returning true will stop the drop operation at this widget
+		return true;
+	}
+
+	// returning false will cause the drop operation to fall through to underlying widgets (if any)
+	return false;
 }
+
