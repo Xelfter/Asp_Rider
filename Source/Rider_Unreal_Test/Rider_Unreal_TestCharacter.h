@@ -15,7 +15,8 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-
+class UItemBase;
+class UInventoryComponent;
 class AMyHUD;
 
 USTRUCT()
@@ -97,6 +98,8 @@ public:
 	FORCENOINLINE UInventoryComponent* GetInventory() const { return PlayerInventory; }
 
 	void UpdateInteractionWidget() const;
+
+	void DropItem(UItemBase* ItemToDrop, const int32 QuantityToDrop);
 
 
 

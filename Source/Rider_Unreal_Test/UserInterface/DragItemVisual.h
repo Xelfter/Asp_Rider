@@ -6,12 +6,24 @@
 #include "Blueprint/UserWidget.h"
 #include "DragItemVisual.generated.h"
 
-/**
- * 
- */
+class UBorder;
+class UImage;
+class UTextBlock;
+
 UCLASS()
 class RIDER_UNREAL_TEST_API UDragItemVisual : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UBorder* ItemBorder;
+
+	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UImage* ItemIcon;
+
+	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
+	UTextBlock* ItemQuantity;
+
 	
 };
