@@ -72,6 +72,8 @@ void ARider_Unreal_TestCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	{
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ARider_Unreal_TestCharacter::BeginInteract);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ARider_Unreal_TestCharacter::EndInteract);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ARider_Unreal_TestCharacter::ToggleMenu);
 		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -287,6 +289,10 @@ void ARider_Unreal_TestCharacter::UpdateInteractionWidget() const
 	}
 }
 
+void ARider_Unreal_TestCharacter::ToggleMenu()
+{
+	HUD->ToggleMenu();
+}
 
 void ARider_Unreal_TestCharacter::Move(const FInputActionValue& Value)
 {

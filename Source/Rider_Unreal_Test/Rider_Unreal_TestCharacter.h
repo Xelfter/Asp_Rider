@@ -122,6 +122,8 @@ protected:
 // ========= Functions =======================
 // ===========================================
 
+
+	void ToggleMenu();
 	void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
